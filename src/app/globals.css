@@ -15,7 +15,13 @@
 }
 
 body {
+  background-color: #000;
+  color: #fff;
+  /* color: #00fff0; */
+}
+
+/* body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
-}
+} */
