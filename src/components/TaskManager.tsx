@@ -2,6 +2,7 @@
 import { Reorder } from "motion/react";
 import { useEffect, useState } from "react";
 import { FaTrash } from "react-icons/fa";
+import { FaGripVertical } from "react-icons/fa6";
 
 const TaskManager = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
@@ -22,11 +23,10 @@ const TaskManager = () => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       localStorage.setItem("tasks", JSON.stringify(tasks));
-    }, 5000); // Guarda después de 500ms de inactividad
-  
+    }, 500);
+
     return () => clearTimeout(timeout); // Limpia el timeout en cada cambio
   }, [tasks]);
-  
 
   const addTask = () => {
     if (newTask.trim() !== "" && taskDate !== "") {
@@ -43,11 +43,9 @@ const TaskManager = () => {
 
   const toggleTaskCompletion = (id: number) => {
     setTasks(
-      tasks.map((t) =>
-        t.id === id? {...t, completed:!t.completed } : t
-      )
+      tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t))
     );
-  }
+  };
 
   return (
     <div className="bg-zinc-900 border-2 border-zinc-700 p-6 rounded-lg max-w-md mx-auto shadow-lg">
@@ -77,51 +75,38 @@ const TaskManager = () => {
 
       {/* Mostrar las tareas */}
       <div className="mb-4">
-        <Reorder.Group axis="y" values={tasks} onReorder={setTasks}>
+        <Reorder.Group
+          axis="y"
+          values={tasks}
+          onReorder={setTasks}
+          className="space-y-2"
+        >
           {tasks.map((task) => (
-            <Reorder.Item
-            key={task.id}
-            value={task}
-            className={`flex items-center justify-between p-4 mb-2 border rounded-md shadow-sm transition-all duration-200 ${
-              task.completed ? "bg-green-100" : "bg-white"
-            }`}
-          >
-            <div>
-              <span
-                className={`font-medium ${
-                  task.completed ? "text-gray-400 line-through" : "text-gray-800"
-                }`}
-              >
-                {task.text}
-              </span>
-              <p className="text-sm text-gray-500 mt-1">
-                {new Date(task.date).toLocaleDateString("es-MX", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <button
-                onClick={() => toggleTaskCompletion(task.id)}
-                className={`px-2 py-1 text-sm font-semibold rounded ${
-                  task.completed
-                    ? "bg-green-500 text-white hover:bg-green-600"
-                    : "bg-gray-200 text-gray-700 hover:bg-gray-300"
-                }`}
-              >
-                {task.completed ? "Completada" : "Pendiente"}
-              </button>
-              <button
-                onClick={() => deleteTask(task.id)}
-                className="text-red-600 hover:text-red-800 font-semibold transition-all duration-200"
-              >
-                <FaTrash />
-              </button>
-            </div>
-          </Reorder.Item>
-          
+            <Reorder.Item key={task.id} value={task}>
+              <div className="flex items-center space-x-2 text-black  bg-gray-100 p-2 rounded cursor-move">
+                <span>
+                  <FaGripVertical className="h-4 w-4 text-gray-400" />
+                </span>
+
+                  <input
+                    type="checkbox"
+                    className="accent-purple-700 "
+                    onClick={() => toggleTaskCompletion(task.id)}
+                    defaultChecked = { task.completed == true }
+                  />
+
+                <span
+                  className={`flex-grow break-all  ${
+                    task.completed ? "line-through text-gray-500" : ""
+                  }`}
+                >
+                  {task.text} - {task.date}
+                </span>
+                <button onClick={() => deleteTask(task.id)}>
+                  <FaTrash className="h-4 w-4" />
+                </button>
+              </div>
+            </Reorder.Item>
           ))}
         </Reorder.Group>
       </div>
